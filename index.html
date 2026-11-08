@@ -4644,8 +4644,14 @@ E("u9-survey-application-cr", 9, ["5.4","5.3"], 3, "gen", function(){
 /* ============ Bridging set: primary ratio review (prior learning, ids u9r-) ============
    REVIEW entries per Jason's November 7, 2026 design addition. These refresh the
    Applied 1202 primary ratios before the law work above. They are coded to the
-   closest Unit 9 code for the checker, but they are NOT 3202 indicator coverage:
-   see notes9.md for provenance tags (MA1202.5.x) and the coverage accounting. */
+   closest Unit 9 code for the checker, but they are NOT 3202 indicator coverage.
+   Ruled remap (Jason, November 8, 2026): u9r-find-side, u9r-find-side-workplace
+   and u9r-find-angle serve Math 1202's indicator 5.5, solving right triangles
+   with the primary ratios. That provenance is carried in the BRIDGE_SRC table
+   after this set, which sets bridging:true and bridgeSrc on the named entries:
+   the checker code stays in `indicators` because the coverage checker, the
+   indicator filter and the on-screen tag all key on it, and coverage
+   accounting for these entries reads bridgeSrc instead. */
 
 E("u9r-ratio-value", 9, ["5.3"], 1, "gen", function(){
   var triples=[[3,4,5],[5,12,13],[8,15,17],[6,8,10],[9,12,15],[12,16,20],[9,40,41],[12,35,37],[7,24,25],[20,21,29],[15,36,39],[10,24,26],[16,30,34],[15,20,25]];
@@ -4811,6 +4817,16 @@ E("u9r-elevation-depression", 9, ["5.3"], 2, "gen", function(){
   q.figure=u9fig(hyp,h,d,givenLab,["90°",""+th+"°",""]);
   return q;
 }, ["The height and the ground distance are the two legs of a right triangle. Name them opposite and adjacent for the marked angle.", "The ratio using the two legs is tangent. Set it up with the angle, then solve."]);
+
+/* Bridging provenance (Jason's ruling, November 8, 2026): entries named here
+   carry their true Math 1202 source indicator as bridgeSrc, with bridging set
+   true, alongside the Unit 9 checker code in `indicators`. */
+var BRIDGE_SRC={
+  "u9r-find-side":"MA1202.5.5",
+  "u9r-find-side-workplace":"MA1202.5.5",
+  "u9r-find-angle":"MA1202.5.5"
+};
+BANK.forEach(function(e){ var s=BRIDGE_SRC[e.id]; if(s){ e.bridging=true; e.bridgeSrc=s; } });
 
 
 /* ===== Unit 10 ===== */
