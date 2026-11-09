@@ -5403,6 +5403,41 @@ E("u10-fair-prize-cr", 10, ["7.6","7.7"], 3, "gen", function(){
 }, ["Turn the odds into a probability of winning first.", "Set the expected payout, prize times probability, equal to the ticket price and solve."]);
 
 
+/* Unit test pool fix addition, November 9, 2026 (additions only).
+   Unit 8 (Transformations) was fragile: its five CR entries (3, 4, 5, 4, 5
+   marks) form exactly one pair summing to the unit target of 10, the two
+   5-mark entries. One new 6-mark Level 3 CR entry pairs with each 4-mark
+   entry, giving three workable pairs. Applied model: two-stage authored
+   hints on the entry, as every entry in this bank carries. */
+E("u8-cr-triple-transform", 8, ["3.23", "3.18"], 3, "gen", function(){
+  var templates=[
+    [{k:"RX"},{k:"R90"}],
+    [{k:"R180"},{k:"T",dx:2,dy:-1}],
+    [{k:"RY"},{k:"R270"}],
+    [{k:"RXY"},{k:"T",dx:-1,dy:2}],
+    [{k:"T",dx:1,dy:3},{k:"RXNY"}]
+  ];
+  var P=null, steps=null, mids=null, ans=null, guard=0;
+  while(guard++<300){
+    var px=ri(-4,4), py=ri(-4,4);
+    if(px===0&&py===0) continue;
+    var f=pick([0.5,2,3]);
+    var base=pick(templates), pos=ri(0,2);
+    var seq=base.slice(); seq.splice(pos,0,{k:"D",f:f});
+    var p0=[px,py], p1=u8T(p0,seq[0]), p2=u8T(p1,seq[1]), p3=u8T(p2,seq[2]);
+    var all=[p1,p2,p3];
+    if(all.some(function(p){ return Math.abs(p[0])>9||Math.abs(p[1])>9; })) continue;
+    P=p0; steps=seq; mids=[p1,p2]; ans=p3; break;
+  }
+  if(!P){ P=[2,1]; steps=[{k:"RX"},{k:"R90"},{k:"D",f:2}]; mids=[u8T(P,steps[0]),u8T(u8T(P,steps[0]),steps[1])]; ans=u8T(mids[1],steps[2]); }
+  var askX=ri(0,1)===1, ansC=askX?ans[0]:ans[1];
+  var q=numq("Point \\(P"+u8cp(P)+"\\) is transformed in three steps: first "+u8desc(steps[0])+", then "+u8desc(steps[1])+", then "+u8desc(steps[2])+". Find the "+(askX?"x":"y")+"-coordinate of the final image point. Show your work, including the coordinates after each step.",
+    ansC, 0.1,
+    "Apply the transformations in order, using the rules \\( "+u8rule(steps[0])+" \\), then \\( "+u8rule(steps[1])+" \\), then \\( "+u8rule(steps[2])+" \\).\n\\[ \\begin{aligned} P"+u8cp(P)+" &\\to "+u8cp(mids[0])+" \\\\ &\\to "+u8cp(mids[1])+" \\\\ &\\to "+u8cp(ans)+" \\end{aligned} \\]\nThe "+(askX?"x":"y")+"-coordinate of the final image is <b>"+fmt(ansC)+"</b>.",
+    {ask:askX?"x":"y"});
+  q.figure=u8grid([{pts:[P], labs:["P"]}], 6);
+  return q;
+}, ["The order matters: work through the three transformations one at a time, writing down the coordinates after each step.", "Start with the first transformation only, and record the new point before applying the second."]);
 var CR_MARKS={
  "u1-cr-uncertainty-interval": 3,
  "u1-cr-tolerance-limits": 4,
@@ -5444,6 +5479,7 @@ var CR_MARKS={
  "u8-cr-blueprint": 5,
  "u8-cr-design-coords": 4,
  "u8-cr-similar-sides": 5,
+ "u8-cr-triple-transform": 6,
  "u9-sine-side-cr": 3,
  "u9-cosine-angle-cr": 4,
  "u9-mixed-choose-cr": 5,
